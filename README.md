@@ -13,6 +13,7 @@ If you mount your local volume `/path/to/dir` into the container, the tokens wil
 ```
 $ docker run -e FB_CLIENT_ID=123 -e FB_CLIENT_SECRET=xzy \
     -e FB_USER_EMAIL=hi@foo.com -e FB_USER_PASSWORD=secret \
+    -e FB_SCOPES=email,user_friends \
     -v /path/to/dir:/token \
     -it moertel/facebook-token-generator
 ```
@@ -21,5 +22,6 @@ $ docker run -e FB_CLIENT_ID=123 -e FB_CLIENT_SECRET=xzy \
 
 - `FB_CLIENT_ID`: The client ID of your Facebook application
 - `FB_CLIENT_SECRET`: The client secret of your Facebook application
+- `FB_SCOPES` _(optional)_: Comma-separated list of scopes to request
 - `FB_USER_EMAIL`: Email address of Facebook user account for which to obtain an access token
 - `FB_USER_PASSWORD`: Password of Facebook user account

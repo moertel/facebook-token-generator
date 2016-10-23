@@ -14,6 +14,7 @@ var fs = require('fs');
 var firstTimeConsent = false;
 var isDefaultAuthToken = true;
 var tokenGenerated = false;
+var scopes = (env['FB_SCOPES'] === undefined) ? [] : env['FB_SCOPES'].split(',');
 
 var cookieJar = 'cookies.txt';
 
@@ -126,7 +127,7 @@ function generateToken() {
      * over again but they should (have) be(en) remembered for the app.
      */
     graphExplorerPage.open('https://developers.facebook.com/tools/explorer/'+env['FB_CLIENT_ID'], function(status) {
-        graphExplorerPage.evaluate(function() {
+        graphExplorerPage.evaluate(function(scopes) {
             /**
              * Mimic clicks on "Get Token" --> "Get User Access Token" --> "Get Access Token"
              * and save the resulting token to the local file system.
@@ -167,6 +168,30 @@ function generateToken() {
                             var getAccessTokenButton = buttons.find(function(e) { return e.innerText == graphExplorerSubMenuPopupSubmitButtonText });
 
                             if(getAccessTokenButton) {
+                                // Find list of available scopes (each is a checkbox)
+                                var inputLabelsHTMLColl = document.getElementsByClassName('uiInputLabelCheckbox');
+                                var inputLabels = []; for(var i = 0; i < inputLabelsHTMLColl.length; i++) { inputLabels.push(inputLabelsHTMLColl[i]); } // Convert HTMLCollection to Array
+
+                                // Log all pre-selected scopes
+                                for(var i=0; i< inputLabels.length; i++) {
+                                    if (inputLabels[i].disabled == true && inputLabels[i].name != "auth_rerequest") {
+                                        console.log('          |- Scope \'' + inputLabels[i].name + '\' is already selected.');
+                                    }
+                                }
+
+                                // Unless pre-selected, request additional scopes
+                                for(var i=0; i < scopes.length; i++) {
+                                    var scopeLabel = inputLabels.find(function(e) { return e.name == scopes[i]; });
+                                    if (scopeLabel) {
+                                        if (scopeLabel.disabled == false) {
+                                            scopeLabel.click();
+                                            console.log('          |- Requested scope \'' + scopes[i] + '\'.');
+                                        }
+                                    } else {
+                                        console.log('          |- WARNING: Could not find scope \'' + scopes[i] + '\'.');
+                                    }
+                                }
+
                                 // Click 'Get Access Token'
                                 console.log('          |- Found \'' + graphExplorerSubMenuPopupSubmitButtonText + '\' button.');
                                 getAccessTokenButton.click();
@@ -199,7 +224,7 @@ function generateToken() {
                 console.log('ERROR: Something went wrong. Was not able to find the \'' + graphExplorerMainMenuText + '\' button.');
                 window.callPhantom({ exit: true });
             }
-        });
+        }, scopes);
 
         window.setTimeout(function() {
             // Check whether a popup window has been opened

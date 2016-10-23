@@ -8,9 +8,9 @@ RUN apt-get update && apt-get install -y \
 
 # PhantomJS & its dependencies
 RUN apt-get install -y libfontconfig
-RUN wget -q -O phantomjs-2.1.1-linux-x86_64.tar.bz2 https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 \
-    && bzip2 -d phantomjs-2.1.1-linux-x86_64.tar.bz2 \
-    && tar -xf phantomjs-2.1.1-linux-x86_64.tar
+RUN wget -q -O /tmp/phantomjs-2.1.1-linux-x86_64.tar.bz2 https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 \
+    && bzip2 -d /tmp/phantomjs-2.1.1-linux-x86_64.tar.bz2 \
+    && tar -xf /tmp/phantomjs-2.1.1-linux-x86_64.tar
 
 # Python
 RUN apt-get install -y python python-boto

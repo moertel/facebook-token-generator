@@ -15,7 +15,9 @@ RUN wget -q -O phantomjs-2.1.1-linux-x86_64.tar.bz2 https://bitbucket.org/ariya/
 # Python
 RUN apt-get install -y python python-boto
 
-COPY ./generate_fb_token.js generate_fb_token.js
+COPY ./generate_fb_token.js /tmp/generate_fb_token.js
+# Workaround because of https://forums.docker.com/t/automated-docker-build-fails/22831/25
+RUN cp -r /tmp/* / && rm -r /tmp
 
 CMD ./phantomjs-2.1.1-linux-x86_64/bin/phantomjs --cookies-file=cookies.txt generate_fb_token.js \
     && curl -s -X POST \

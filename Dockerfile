@@ -26,4 +26,4 @@ CMD ./phantomjs-2.1.1-linux-x86_64/bin/phantomjs --cookies-file=cookies.txt gene
           | awk '{print "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id="ENVIRON["FB_CLIENT_ID"]"&client_secret="ENVIRON["FB_CLIENT_SECRET"]"&fb_exchange_token="$1}') \
        | awk -F'=' '{print $2}' \
        | awk -F'&' '{print $1}' \
-       > /token/longLivedAccessToken.txt
+       > /token/longLivedAuthToken.txt

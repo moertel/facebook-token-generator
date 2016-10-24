@@ -5,8 +5,6 @@ RUN apt-get update && apt-get install -y \
     bzip2 \
     curl \
     libfontconfig \
-    python \
-    python-boto \
     wget \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 

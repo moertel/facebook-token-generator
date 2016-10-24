@@ -7,8 +7,8 @@ For server apps which should run in the background without any user interaction,
 ### Run
 
 If you mount your local volume `/path/to/dir` into the container, the tokens will be stored at:
-- `/path/to/dir/shortLivesAccessToken.txt`
-- `/path/to/dir/longLivedAccessToken.txt`
+- `/path/to/dir/shortLivedAuthToken.txt`
+- `/path/to/dir/longLivedAuthToken.txt`
 
 ```
 $ docker run -e FB_CLIENT_ID=123 -e FB_CLIENT_SECRET=xzy \

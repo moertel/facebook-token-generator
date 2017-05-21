@@ -3,7 +3,7 @@
 set -e
 set -o pipefail
 
-phantomjs-2.1.1-linux-x86_64/bin/phantomjs --cookies-file=cookies.txt generate_fb_token.js
+phantomjs-${PHANTOMJS_VERSION}-linux-x86_64/bin/phantomjs --cookies-file=cookies.txt generate_fb_token.js
 
 echo '[EXCHANGE TOKEN] START:'
 echo -n '[EXCHANGE TOKEN]   |- Send short-lived token to Facebook...'

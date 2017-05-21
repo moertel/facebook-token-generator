@@ -23,14 +23,14 @@ page.settings.javascriptEnabled = true;
 page.settings.loadImages = false;
 
 page.onConsoleMessage = function(msg) {
-    system.stderr.writeLine('[LOGIN] ' + msg);
+    system.stderr.writeLine('[FACEBOOK LOGIN] ' + msg);
 };
 
 /**
  * Log into Facebook and save the cookies
  */
 page.open('https://m.facebook.com/', function(status) {
-    console.log('[LOGIN] START: Logging into Facebook...');
+    console.log('[FACEBOOK LOGIN] START: Logging into Facebook...');
 
     if (page.url == 'https://m.facebook.com/'){
         fs.write(cookieJar, JSON.stringify(phantom.cookies), "w");
@@ -44,7 +44,7 @@ page.open('https://m.facebook.com/', function(status) {
 
     page.onCallback = function(p) {
         if(p.exit) {
-            console.log('[LOGIN] ERROR. Exiting...');
+            console.log('[FACEBOOK LOGIN] ERROR. Exiting...');
             phantom.exit(1);
         }
     }
@@ -83,7 +83,11 @@ function generateToken() {
     graphExplorerPage.settings.loadImages = false;
 
     graphExplorerPage.onConsoleMessage = function(msg) {
-        system.stderr.writeLine('[GENERATE TOKEN] ' + msg);
+        if(msg.lastIndexOf('Facebook Pixel Warning', 0) === 0) {
+            // Silently ignore this warning
+        } else {
+            system.stderr.writeLine('[GENERATE TOKEN] ' + msg);
+        }
     };
 
     graphExplorerPage.onCallback = function(p) {
@@ -91,6 +95,17 @@ function generateToken() {
             console.log('[ERROR HANDLER] START: Generating screenshot snapshotting the page at time of error...')
             graphExplorerPage.render('/token/generateTokenError.png');
             console.log('[ERROR HANDLER] DONE: Screenshot \'/token/generateTokenError.png\' saved.');
+            console.log('[ERROR HANDLER] Exiting...')
+            phantom.exit(1);
+        }
+    };
+
+    graphExplorerPage.onError = function(message, trace) {
+        if(message == "TypeError: undefined is not an object (evaluating 'x.length')") {
+            // Silently ignore this error error
+            return true;
+        } else {
+            console.log('[ERROR HANDLER] ' + message);
             console.log('[ERROR HANDLER] Exiting...')
             phantom.exit(1);
         }
@@ -139,7 +154,13 @@ function generateToken() {
             console.log('START: Opening submenu...');
             var linksHTMLColl = document.getElementsByTagName('a');
             var links = []; for(var i = 0; i < linksHTMLColl.length; i++) { links.push(linksHTMLColl[i]); } // Convert HTMLCollection to Array
-            var getTokenMenuItem = links.find(function(e) { if (e.firstElementChild) { return e.firstElementChild.innerText == graphExplorerMainMenuText }});
+            var getTokenMenuItem = links.find(function(e) {
+                if (e.firstElementChild && e.firstElementChild.innerText) {
+                    return e.firstElementChild.innerText.match(graphExplorerMainMenuText);
+                } else {
+                    return e.innerText.match(graphExplorerMainMenuText);
+                }
+            });
 
             if(getTokenMenuItem) {
                 // Click 'Get Token'
@@ -152,7 +173,13 @@ function generateToken() {
                     console.log('  |- START: Opening auth dialog...');
                     var subMenuLinksHTMLColl = document.getElementsByTagName('a');
                     var subMenuLinks = []; for(var i = 0; i < subMenuLinksHTMLColl.length; i++) { subMenuLinks.push(subMenuLinksHTMLColl[i]); } // Convert HTMLCollection to Array
-                    var getUserAccessTokenMenuItem = subMenuLinks.find(function(e) { if (e.firstElementChild) { return e.firstElementChild.innerText.match(graphExplorerSubMenuText) }});
+                    var getUserAccessTokenMenuItem = subMenuLinks.find(function(e) {
+                        if (e.firstElementChild && e.firstElementChild.innerText) {
+                            return e.firstElementChild.innerText.match(graphExplorerSubMenuText);
+                        } else {
+                            return e.innerText.match(graphExplorerSubMenuText);
+                        }
+                    });
 
                     if(getUserAccessTokenMenuItem) {
                         // Click 'Get User Access Token'
@@ -165,7 +192,9 @@ function generateToken() {
                             console.log('       |- START: Generating token...');
                             var buttonsHTMLColl = document.getElementsByTagName('button');
                             var buttons = []; for(var i = 0; i < buttonsHTMLColl.length; i++) { buttons.push(buttonsHTMLColl[i]); } // Convert HTMLCollection to Array
-                            var getAccessTokenButton = buttons.find(function(e) { return e.innerText == graphExplorerSubMenuPopupSubmitButtonText });
+                            var getAccessTokenButton = buttons.find(function(e) {
+                                return e.innerText.match(graphExplorerSubMenuPopupSubmitButtonText);
+                            });
 
                             if(getAccessTokenButton) {
                                 // Find list of available scopes (each is a checkbox)
@@ -191,7 +220,6 @@ function generateToken() {
                                         console.log('          |- WARNING: Could not find scope \'' + scopes[i] + '\'.');
                                     }
                                 }
-
                                 // Click 'Get Access Token'
                                 console.log('          |- Found \'' + graphExplorerSubMenuPopupSubmitButtonText + '\' button.');
                                 getAccessTokenButton.click();

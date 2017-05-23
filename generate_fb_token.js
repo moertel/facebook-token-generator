@@ -142,14 +142,14 @@ function generateToken() {
      * over again but they should (have) be(en) remembered for the app.
      */
     graphExplorerPage.open('https://developers.facebook.com/tools/explorer/'+env['FB_CLIENT_ID'], function(status) {
-        graphExplorerPage.evaluate(function(scopes) {
+        graphExplorerPage.evaluate(function(scopes, env) {
             /**
              * Mimic clicks on "Get Token" --> "Get User Access Token" --> "Get Access Token"
              * and save the resulting token to the local file system.
              */
-            var graphExplorerMainMenuText = 'Get Token';
-            var graphExplorerSubMenuText = 'Get User Access Token';
-            var graphExplorerSubMenuPopupSubmitButtonText = 'Get Access Token';
+            var graphExplorerMainMenuText = env['FB_BUTTON_TEXT_GETTOKEN'];
+            var graphExplorerSubMenuText = env['FB_BUTTON_TEXT_GETUSERACCESSTOKEN'];
+            var graphExplorerSubMenuPopupSubmitButtonText = env['FB_BUTTON_TEXT_GETACCESSTOKEN'];
 
             console.log('START: Opening submenu...');
             var linksHTMLColl = document.getElementsByTagName('a');
@@ -252,7 +252,7 @@ function generateToken() {
                 console.log('ERROR: Something went wrong. Was not able to find the \'' + graphExplorerMainMenuText + '\' button.');
                 window.callPhantom({ exit: true });
             }
-        }, scopes);
+        }, scopes, env);
 
         window.setTimeout(function() {
             // Check whether a popup window has been opened

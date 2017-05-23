@@ -25,3 +25,10 @@ $ docker run -e FB_CLIENT_ID=123 -e FB_CLIENT_SECRET=xzy \
 - `FB_SCOPES` _(optional)_: Comma-separated list of scopes to request
 - `FB_USER_EMAIL`: Email address of Facebook user account for which to obtain an access token
 - `FB_USER_PASSWORD`: Password of Facebook user account
+
+#### Languages other than English
+
+This script assumes that your Facebook language is English. If you use Facebook in another language, you may want to override the button texts:
+- `FB_BUTTON_TEXT_GETTOKEN` _(optional)_: Default is "Get Token"
+- `FB_BUTTON_TEXT_GETUSERACCESSTOKEN` _(optional)_: Default is "Get User Access Token"
+- `FB_BUTTON_TEXT_GETACCESSTOKEN` _(optional)_: Default is "Get Access Token"

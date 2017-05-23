@@ -6,6 +6,10 @@ ARG VCS_REF
 ARG VCS_URL
 ARG VERSION
 
+ENV FB_BUTTON_TEXT_GETTOKEN "Get Token"
+ENV FB_BUTTON_TEXT_GETUSERACCESSTOKEN "Get User Access Token"
+ENV FB_BUTTON_TEXT_GETACCESSTOKEN "Get Access Token"
+
 LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.name="Facebook Token Generator" \
